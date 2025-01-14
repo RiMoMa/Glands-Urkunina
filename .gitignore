@@ -1,0 +1,3 @@
+# Ignorar input_data y processed_data
+input_data/
+processed_data/
