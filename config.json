@@ -1,0 +1,23 @@
+{
+    "input_path": "/media/ricardo/Datos/Project_GastricMorphometry/input_data",
+    "processed_path": "/media/ricardo/Datos/Project_GastricMorphometry/processed_data",
+    "patch_size": 1536,
+    "batch_size": 100,
+    "high_resol": false,
+    "img_normalize": true,
+    "sam_checkpoint": "/media/ricardo/Datos/Project_GastricMorphometry/src/utils/segment-anything/checkpoints/sam_vit_h_4b8939.pth",
+    "model_type": "vit_h",
+    "device": "cuda:0",
+    "matlab_path": "/data/Gland-Segmentation/",
+    "matlab_function": "NormalizacionColor_registro",
+    "output_subfolder_normalized": "Dataset_Normalized",
+    "final_output": "final_output",
+    "svs_subfolder": "images",
+    "xml_subfolder": "annotations",
+    "suffix_corrected": "_corrected.xml",
+    "suffix_completed": "_completed.xml",
+    "suffix_final": "_corrected_final.xml",
+    "log_path": "logs"
+}
+
+
