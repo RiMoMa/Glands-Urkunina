@@ -230,7 +230,7 @@ def process_all_images_with_pipeline(config):
 
 def main():
     # Cargar configuración
-    with open("/media/ricardo/Datos/Project_GastricMorphometry/config.json", "r") as config_file:
+    with open("config.json", "r") as config_file:
         config = json.load(config_file)
 
     # Procesar imágenes con la configuración cargada

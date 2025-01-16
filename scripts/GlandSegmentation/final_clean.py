@@ -126,7 +126,7 @@ def main():
     #dataset_path = "/media/ricardo/Datos/Data/Reviewed/"
     #detections_path_xml = "/media/ricardo/Datos/DataProcesadas2/"
 
-    with open("/media/ricardo/Datos/Project_GastricMorphometry/config.json") as config_file:
+    with open("config.json") as config_file:
         config = json.load(config_file)
 
     dataset_path = os.path.join(config["input_path"], config["svs_subfolder"])

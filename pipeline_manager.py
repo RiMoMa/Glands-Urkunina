@@ -80,7 +80,7 @@ def verify_files(config):
 def main():
     # Configuración inicial
     create_config()
-    with open("scripts/GlandSegmentation/config.json") as config_file:
+    with open("config.json") as config_file:
         config = json.load(config_file)
 
     create_folder_structure(config)
@@ -95,7 +95,8 @@ def main():
         "process_svs_and_generate_annotations.py",
         "clean_binary_mask_with_annotations.py",
         "refined_SAM_segmentation.py",
-        "final_clean.py"
+        "final_clean.py",
+        "simplify_XML.py"
     ]
     for script in scripts:
         run_script(script, config, config["log_path"])

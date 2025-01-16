@@ -114,7 +114,7 @@ def clean_binary_mask_with_annotations(svs_path, xml_path, output_xml_path, min_
 def main():
     import json
         # Leer configuración
-    with open("/media/ricardo/Datos/Project_GastricMorphometry/config.json") as config_file:
+    with open("config.json") as config_file:
         config = json.load(config_file)
 
     dataset_path = os.path.join(config["input_path"], config["svs_subfolder"])

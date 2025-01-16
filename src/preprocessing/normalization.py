@@ -35,7 +35,7 @@ def normalize_dataset_with_matlab(case_name, output_folder):
 
     # Construir el comando para MATLAB
     command = (
-        f"addpath(genpath('/media/ricardo/Datos/Project_GastricMorphometry/src/preprocessing/color_normalization_matlab/')); "
+        f"addpath(genpath('src/preprocessing/color_normalization_matlab/')); "
         f"NormalizacionColor_registro('{input_path}', '{output_path}'); exit;"
     )
 

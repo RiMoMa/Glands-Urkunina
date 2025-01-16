@@ -10,12 +10,12 @@ from src.utils.utils_SAM import extract_patch_from_anomaly
 from src.annotations.xml_save_corrected_asap import save_to_asap_xml_with_normal_annotations
 from src.annotations.parse_annotations import parse_annotations
 # Configuración de SAM
-sam_checkpoint = "/media/ricardo/Datos/SegmentacionGlandulasFinal/SAM/segment-anything/sam_vit_h_4b8939.pth"
-model_type = "vit_h"
-device = "cuda"
-sam = sam_model_registry[model_type](checkpoint=sam_checkpoint)
-sam.to(device=device)
-predictor = SamPredictor(sam)
+# sam_checkpoint = "/media/ricardo/Datos/SegmentacionGlandulasFinal/SAM/segment-anything/sam_vit_h_4b8939.pth"
+# model_type = "vit_h"
+# device = "cuda"
+# sam = sam_model_registry[model_type](checkpoint=sam_checkpoint)
+# sam.to(device=device)
+# predictor = SamPredictor(sam)
 
 import json
 
@@ -28,6 +28,14 @@ def main():
     dataset_path = os.path.join(config["input_path"], config["svs_subfolder"])
     detections_path_xml = config["processed_path"]
     output_path = config["processed_path"]
+    sam_checkpoint = config["sam_checkpoint"]
+    model_type = config["model_type"]
+    device = config["device"]
+
+    # Configurar SAM dinámicamente
+    sam = sam_model_registry[model_type](checkpoint=sam_checkpoint)
+    sam.to(device=device)
+    predictor = SamPredictor(sam)
 
     #dataset_path = "/media/ricardo/Datos/Data/Reviewed/"
     #detections_path_xml = "/media/ricardo/Datos/DataProcesadas2/"
