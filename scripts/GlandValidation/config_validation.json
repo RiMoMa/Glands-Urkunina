@@ -1,0 +1,5 @@
+{
+    "manual_mask_dir": "/media/ricardo/Datos/Project_GastricMorphometry/input_data/ManualGlandDataset/manual_gland_annotations",
+    "image_dir": "/media/ricardo/Datos/Project_GastricMorphometry/input_data/ManualGlandDataset/imagesNormalized",
+    "output_dir": "/media/ricardo/Datos/Project_GastricMorphometry/input_data/ManualGlandDataset/sam_gland_annotations"
+}

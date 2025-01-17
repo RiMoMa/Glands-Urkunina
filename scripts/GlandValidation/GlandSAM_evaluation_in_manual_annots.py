@@ -79,11 +79,21 @@ predictor = SamAutomaticMaskGenerator(sam)
 import glob
 import os
 import cv2
+import json
 
 # Definir directorios
-image_dir = "/media/ricardo/Datos/Project_GastricMorphometry/input_data/ManualGlandDataset/imagesNormalized"
-output_dir = "/media/ricardo/Datos/Project_GastricMorphometry/input_data/ManualGlandDataset/sam_gland_annotations"
+# Cargar configuración desde config.json
+with open('scripts/GlandValidation/config_validation.json', 'r') as config_file:
+    config = json.load(config_file)
+
+manual_mask_dir = config["manual_mask_dir"]
+image_dir = config["image_dir"]
+output_dir = config["output_dir"]
+
+
+
 os.makedirs(output_dir, exist_ok=True)
+masks_paths = glob.glob(f"{manual_mask_dir}/**/*.*", recursive=True)
 
 # Buscar todas las imágenes recursivamente
 image_paths = glob.glob(f"{image_dir}/**/*.*", recursive=True)
@@ -114,8 +124,8 @@ for img_path in image_paths:
 
 #2. Abrir las mascaras manuales
 
-manual_mask_dir = "/media/ricardo/Datos/Project_GastricMorphometry/input_data/ManualGlandDataset/manual_gland_annotations"
-masks_paths = glob.glob(f"{manual_mask_dir}/**/*.*", recursive=True)
+
+
 results = []
 
 for filename in masks_paths:
@@ -177,3 +187,14 @@ with open("metrics_results.csv", "w", newline="") as csvfile:
     writer.writeheader()
     writer.writerows(results)
 
+
+
+# Mostrar resultados por glándula
+for result in results:
+    print(f"Resultados para: {result['filename']}")
+    print(f"IoU: {result['IoU']:.3f}, Dice: {result['Dice']:.3f}")
+    for m, a in zip(result["manual_features"], result["auto_features"]):
+        print(f"Glándula {m['label']}:")
+        print(f" - Área Manual: {m['area']}, Área Automática: {a['area']}")
+        print(f" - Circularidad Manual: {m['circularity']:.3f}, Circularidad Automática: {a['circularity']:.3f}")
+        print(f" - Contraste Manual: {m['contrast']:.3f}, Contraste Automático: {a['contrast']:.3f}")
