@@ -4,6 +4,7 @@ import cv2
 import os
 from src.utils.utils_SAM import create_binary_mask
 import numpy as np
+import torch
 import csv
 from scipy.io import loadmat
 import numpy as np
@@ -89,6 +90,9 @@ output_dir = config["output_dir"]
 sam_checkpoint = config["sam_checkpoint"]
 model_type = "vit_h"
 sam = sam_model_registry[model_type](checkpoint=sam_checkpoint)
+device = "cuda" if torch.cuda.is_available() else "cpu"
+sam.to(device)
+
 predictor = SamAutomaticMaskGenerator(sam)
 
 
