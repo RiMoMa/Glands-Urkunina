@@ -1,6 +1,6 @@
 {
-    "manual_mask_dir": "/media/ricardo/Datos/Project_GastricMorphometry/input_data/ManualGlandDataset/manual_gland_annotations",
-    "image_dir": "/media/ricardo/Datos/Project_GastricMorphometry/input_data/ManualGlandDataset/imagesNormalized",
-    "output_dir": "/media/ricardo/Datos/Project_GastricMorphometry/input_data/ManualGlandDataset/sam_gland_annotations",
+    "manual_mask_dir": "input_data/ManualGlandDataset/manual_gland_annotations",
+    "image_dir": "input_data/ManualGlandDataset/imagesNormalized",
+    "output_dir": "input_data/ManualGlandDataset/sam_gland_annotations",
     "sam_checkpoint": "src/utils/segment-anything/checkpoints/sam_vit_h_4b8939.pth"
 }
