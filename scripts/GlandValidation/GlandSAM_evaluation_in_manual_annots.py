@@ -70,12 +70,6 @@ def extract_gland_features(image, mask):
 
 
 
-# Cargar modelo SAM
-sam_checkpoint = "/media/ricardo/Datos/Project_GastricMorphometry/src/utils/segment-anything/checkpoints/sam_vit_h_4b8939.pth"
-model_type = "vit_h"
-sam = sam_model_registry[model_type](checkpoint=sam_checkpoint)
-predictor = SamAutomaticMaskGenerator(sam)
-
 import glob
 import os
 import cv2
@@ -89,6 +83,14 @@ with open('scripts/GlandValidation/config_validation.json', 'r') as config_file:
 manual_mask_dir = config["manual_mask_dir"]
 image_dir = config["image_dir"]
 output_dir = config["output_dir"]
+
+
+# Cargar modelo SAM
+sam_checkpoint = config["sam_checkpoint"]
+model_type = "vit_h"
+sam = sam_model_registry[model_type](checkpoint=sam_checkpoint)
+predictor = SamAutomaticMaskGenerator(sam)
+
 
 
 
