@@ -20,11 +20,16 @@ import glob
 def iou_score(y_true, y_pred):
     intersection = np.logical_and(y_true, y_pred)
     union = np.logical_or(y_true, y_pred)
+    if np.sum(union) == 0:  # Evitar división por cero
+        return 0.0
     return np.sum(intersection) / np.sum(union)
 
 def dice_coefficient(y_true, y_pred):
     intersection = np.logical_and(y_true, y_pred)
+    if np.sum(y_true) + np.sum(y_pred) == 0:  # Evitar división por cero
+        return 0.0
     return 2 * np.sum(intersection) / (np.sum(y_true) + np.sum(y_pred))
+
 
 # Función para extraer características por glándula
 def extract_gland_features(image, mask):
@@ -130,76 +135,143 @@ for img_path in image_paths:
 
 #2. Abrir las mascaras manuales
 
+# Nombre del archivo CSV
+output_csv = "metrics_results.csv"
+
+# Si el CSV ya existe, evitar todo el proceso
+if os.path.exists(output_csv):
+    print(f"El archivo {output_csv} ya existe. Proceso omitido.")
+else:
+    results = []
+
+    results = []
+
+    for filename in masks_paths:
+        print('Extracting features from image: {}'.format(filename))
 
 
-results = []
+        manual_mask = loadmat(os.path.join(filename))
+        manual_mask = manual_mask["MaskL"]
+        roi_mask = manual_mask > 0
 
-for filename in masks_paths:
+        manual_mask = manual_mask* (manual_mask > 1)
+        basename = os.path.basename(filename)
+        # Eliminar la extensión
+        name_no_ext = os.path.splitext(basename)[0]  # '227_078_21_he_6'
 
+        # Extraer la parte sin el índice final
+        base_id = "_".join(name_no_ext.split('_')[:-1])  # '227_078_21_he'
 
-    manual_mask = loadmat(os.path.join(filename))
-    manual_mask = manual_mask["MaskL"]
-    roi_mask = manual_mask > 0
-
-    manual_mask = manual_mask* (manual_mask > 1)
-    basename = os.path.basename(filename)
-    # Eliminar la extensión
-    name_no_ext = os.path.splitext(basename)[0]  # '227_078_21_he_6'
-
-    # Extraer la parte sin el índice final
-    base_id = "_".join(name_no_ext.split('_')[:-1])  # '227_078_21_he'
-
-    # Determinar si es metaplasia o control
-    if 'metaplasia' in filename:
-        condition = 'metaplasia'
-    elif 'control' in filename:
-        condition = 'control'
-    else:
-        condition = 'unknown'
-    image_path = os.path.join(image_dir,condition+"_isbi", base_id ,name_no_ext+ ".png")  # Asume extensión .png
-    image = cv2.imread(image_path, cv2.IMREAD_GRAYSCALE)
-
-    output_name = os.path.join(output_dir,condition+'_isbi',base_id,name_no_ext + '_mask.png')
-
-    auto_mask = cv2.imread(output_name)
-
-    # Intersección entre máscaras
-    roi_mask = roi_mask.astype('uint8')  # Convertir roi_mask si no es uint8
-    auto_mask_channel = (auto_mask[:, :, 0] > 0).astype('uint8')  # Convertir auto_mask a uint8
-
-    # Aplicar bitwise_and
-    roi_automatic = cv2.bitwise_and(roi_mask, auto_mask_channel)
-
-    iou = iou_score(manual_mask, roi_automatic)
-
-    dice = dice_coefficient(manual_mask, roi_automatic)
-
-    manual_features = extract_gland_features(image, manual_mask)
-    auto_features = extract_gland_features(image, auto_mask)
-
-    # Guardar resultados
-    results.append({
-        "filename": filename,
-        "IoU": iou,
-        "Dice": dice,
-        "manual_features": manual_features,
-        "auto_features": auto_features
-    })
-
-    # Guardar en CSV
-with open("metrics_results.csv", "w", newline="") as csvfile:
-    fieldnames = ["filename", "IoU", "Dice"]
-    writer = csv.DictWriter(csvfile, fieldnames=fieldnames)
-    writer.writeheader()
-    writer.writerows(results)
+        # Determinar si es metaplasia o control
+        if 'metaplasia' in filename:
+            condition = 'metaplasia'
+        elif 'control' in filename:
+            condition = 'control'
+        else:
+            condition = 'unknown'
+        image_path = os.path.join(image_dir,condition+"_isbi", base_id ,name_no_ext+ ".png")  # Asume extensión .png
+        if not os.path.exists(image_path):
+            continue
 
 
+        image = cv2.imread(image_path, cv2.IMREAD_GRAYSCALE)
+
+        output_name = os.path.join(output_dir,condition+'_isbi',base_id,name_no_ext + '_mask.png')
+        if not os.path.exists(output_name):
+            continue
+
+        auto_mask = cv2.imread(output_name)
+
+        # Intersección entre máscaras
+        roi_mask = roi_mask.astype('uint8')  # Convertir roi_mask si no es uint8
+        auto_mask_channel = (auto_mask[:, :, 0] > 0).astype('uint8')  # Convertir auto_mask a uint8
+
+        # Aplicar bitwise_and
+        roi_automatic = cv2.bitwise_and(roi_mask, auto_mask_channel)
+
+        iou = iou_score(manual_mask>0, roi_automatic>0)
+
+        dice = dice_coefficient(manual_mask>0, roi_automatic>0)
+
+        manual_features = extract_gland_features(image, manual_mask)
+        auto_features = extract_gland_features(image, roi_automatic)
+
+        # Guardar resultados
+        results.append({
+            "case_name": base_id,
+            "patch_name":name_no_ext,
+            "filename": filename,
+            "IoU": iou,
+            "Dice": dice,
+            "manual_features": manual_features,
+            "auto_features": auto_features
+        })
+
+        # Guardar en CSV
+    # Guardar en CSV solo las métricas relevantes
+    with open(output_csv, "w", newline="") as csvfile:
+        fieldnames = ["case_name","patch_name","filename", "IoU", "Dice", "manual_features", "auto_features"]
+        writer = csv.DictWriter(csvfile, fieldnames=fieldnames)
+        writer.writeheader()
+
+        # Filtrar claves relevantes
+        filtered_results = [{k: result[k] for k in fieldnames} for result in results]
+        writer.writerows(filtered_results)
+
+
+
+# Calcular la media del IoU y Dice para entradas con Dice >= 0.4
+# Calcular estadísticas con filtro
+# Calcular estadísticas con filtro
+iou_scores = []
+dice_scores = []
+total = 0
+descartados = 0
+quedaron = 0
+archivos_descartados = []
+archivos_retenidos = []
+
+with open(output_csv, "r") as csvfile:
+    reader = csv.DictReader(csvfile)
+    for row in reader:
+        total += 1
+        dice_score = float(row["Dice"])
+        if dice_score >= 0.4:
+            iou_scores.append(float(row["IoU"]))
+            dice_scores.append(dice_score)
+            quedaron += 1
+            archivos_retenidos.append(row["filename"])  # Agregar archivo retenido
+        else:
+            descartados += 1
+            archivos_descartados.append(row["filename"])  # Agregar archivo descartado
+
+# Mostrar estadísticas
+if len(dice_scores) > 0:
+    mean_iou = np.mean(iou_scores)
+    mean_dice = np.mean(dice_scores)
+    print(f"Promedio de IoU (filtrado): {mean_iou:.3f}")
+    print(f"Promedio de Dice (filtrado): {mean_dice:.3f}")
+else:
+    print("No hay datos con Dice >= 0.45 después del filtrado.")
+
+print(f"Total de máscaras procesadas: {total}")
+print(f"Máscaras descartadas: {descartados}")
+print(f"Máscaras retenidas: {quedaron}")
+
+# Guardar listas de archivos en archivos de texto
+with open("archivos_retenidos.txt", "w") as f:
+    f.write("\n".join(archivos_retenidos))
+
+with open("archivos_descartados.txt", "w") as f:
+    f.write("\n".join(archivos_descartados))
+
+print(f"Archivos retenidos y descartados guardados en 'archivos_retenidos.txt' y 'archivos_descartados.txt'.")
 
 # Mostrar resultados por glándula
 for result in results:
-    print(f"Resultados para: {result['filename']}")
-    print(f"IoU: {result['IoU']:.3f}, Dice: {result['Dice']:.3f}")
-    for m, a in zip(result["manual_features"], result["auto_features"]):
+    print(f"Resultados para: {row['filename']}")
+    print(f"IoU: {row['IoU']:.3f}, Dice: {row['Dice']:.3f}")
+    for m, a in zip(row["manual_features"], row["auto_features"]):
         print(f"Glándula {m['label']}:")
         print(f" - Área Manual: {m['area']}, Área Automática: {a['area']}")
         print(f" - Circularidad Manual: {m['circularity']:.3f}, Circularidad Automática: {a['circularity']:.3f}")
