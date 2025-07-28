@@ -1,4 +1,6 @@
+"refined_SAM_segmentation.py"
 import os
+import re
 import xml.etree.ElementTree as ET
 from shapely.geometry import Polygon
 import numpy as np
@@ -24,7 +26,7 @@ def main():
     # Leer configuración
     with open("config.json", "r") as config_file:
         config = json.load(config_file)
-
+    config['device'] = 'cuda:0'
     dataset_path = os.path.join(config["input_path"], config["svs_subfolder"])
     detections_path_xml = config["processed_path"]
     output_path = config["processed_path"]
@@ -43,8 +45,12 @@ def main():
     detections = [f for f in os.listdir(detections_path_xml) if f.endswith("corrected.xml")]
 
     for detection_file in detections:
+        # Quitar la extensión
         case_name = os.path.splitext(detection_file)[0]
-        case_name = case_name[0:case_name.index("_")]
+
+        # Eliminar el sufijo "_corrected"
+        case_name = re.sub(r'_corrected$', '', case_name)
+
         print(case_name)
         slide_path = os.path.join(dataset_path, f"{case_name}.svs")
         xml_path = os.path.join(detections_path_xml, detection_file)

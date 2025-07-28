@@ -88,7 +88,7 @@ def overlay_mask(image, mask, colors=[(0, 1.0, 0)],
     if np.max(image)>1.0:
         image = image/255.0
     # gray scale image
-    if mask.ndim is 3:
+    if mask.ndim == 3:
         mask = mask[:,:,0]
     mask_image = color.label2rgb(mask, image,
                              colors=colors, alpha=alpha,
@@ -110,7 +110,7 @@ def overlay_boundary(image, mask, color=(0, 1.0, 0),
     # normalize image
     if np.max(image)>1.0:
         image = image/255.0
-    if mask.ndim is 3:
+    if mask.ndim == 3:
         mask = mask[:,:,0]
     boundary_image = segmentation.mark_boundaries(image, mask,
                                       color = color, mode=mode)

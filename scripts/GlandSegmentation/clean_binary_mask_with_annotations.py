@@ -1,3 +1,4 @@
+"clean_binary_mask_with_annotations.py"
 import os
 import xml.etree.ElementTree as ET
 from shapely.geometry import Polygon, MultiPolygon

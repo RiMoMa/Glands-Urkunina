@@ -1,3 +1,4 @@
+"final_clean.py"
 import os
 import json
 import xml.etree.ElementTree as ET
@@ -6,7 +7,7 @@ from shapely.validation import make_valid
 import cv2
 import numpy as np
 from openslide import OpenSlide
-
+import re
 
 
 def clean_binary_mask_with_annotations(svs_path, xml_path, output_xml_path, min_area=64*64, kernel_size=7):
@@ -137,8 +138,12 @@ def main():
 
     for detection_file in detections:
         print(detection_file)
-        case_name = os.path.splitext(detection_file)[0]  # Obtener el nombre base del caso (sin extensión)
-        case_name = case_name[0:case_name.index("_")]
+        # Quitar la extensión
+        case_name = os.path.splitext(detection_file)[0]
+
+        # Eliminar el sufijo "_corrected"
+        case_name = re.sub(r'_completed$', '', case_name)
+
         print(case_name)
         svs_path = os.path.join(dataset_path, f"{case_name}.svs")
         xml_path = os.path.join(detections_path_xml, detection_file)

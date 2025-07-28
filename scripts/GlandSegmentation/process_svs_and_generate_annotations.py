@@ -1,3 +1,4 @@
+"process_svs_and_generate_annotations.py"
 import os
 import json
 import numpy as np
@@ -86,7 +87,7 @@ def generate_WSI(config, path_svs, case_name,output_im,output_folder):
         ImgNormalize=img_normalize,
         CaseName=case_name,
         batch_size=batch_size,
-        patch_size=512,
+        patch_size=adjusted_patchsize,
         num_threads_in_multithreaded=1,
         seed_for_shuffle=5243,
         return_incomplete=True,
@@ -220,8 +221,8 @@ def process_all_images_with_pipeline(config):
 
         functionPatchesExtraction.generate_Patches(patchsize, batch_size, slide_path, outputIm=output_im, HighResol=high_resol,
                          ImgNormalize=img_normalize, CaseName=case_name,OutputPath=output_folder)
-
-        normalize_dataset_with_matlab(case_name, output_folder)
+        if img_normalize:
+            normalize_dataset_with_matlab(case_name, output_folder)
 
 
         # Generar WSI y anotaciones

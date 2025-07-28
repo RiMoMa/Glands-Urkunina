@@ -1,0 +1,13 @@
+{
+    "input_path": "input_data",
+    "processed_path": "processed_data",
+    "final_output": "final_output",
+    "svs_subfolder": "images",
+    "xml_subfolder": "annotations",
+    "suffix_corrected": "_corrected.xml",
+    "suffix_completed": "_completed.xml",
+    "suffix_final": "_corrected_final.xml",
+    "suffix_final_unet": "_completed_Unet.xml",
+
+    "log_path": "logs"
+}

@@ -70,9 +70,9 @@ def verify_files(config):
     if not svs_files:
         print(f"No se encontraron archivos SVS en {svs_path}.")
         return False
-    if not xml_files:
-        print(f"No se encontraron archivos XML en {xml_path}.")
-        return False
+    # if not xml_files:
+    #     print(f"No se encontraron archivos XML en {xml_path}.")
+    #     return False
     print(f"{len(svs_files)} archivos SVS y {len(xml_files)} archivos XML encontrados.")
     return True
 
@@ -96,7 +96,11 @@ def main():
         "clean_binary_mask_with_annotations.py",
         "refined_SAM_segmentation.py",
         "final_clean.py",
-        "simplify_XML.py"
+        "simplify_XML.py",
+        "process_svs_and_generate_annotations_unet.py",
+        "clean_binary_mask_with_annotations_unet.py",
+        "refined_unet_segmentation.py",
+        "simplify_XML_unet.py"
     ]
     for script in scripts:
         run_script(script, config, config["log_path"])

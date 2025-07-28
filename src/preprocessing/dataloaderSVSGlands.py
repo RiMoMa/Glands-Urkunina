@@ -87,7 +87,7 @@ class DataLoader(DataLoader):
             for i,(nombre, (x, y)) in enumerate(gland_img):
                 tileInfo.append(nombre)
                 tileCoords.append((x, y))
-                img_data = self.load_patient(slide, x, y,self.patch_size[0])
+                img_data = self.load_patient(slide, x, y,self.patch_size)
                 # hence we use tensor manipulation to convert to channel first
                 # dummy dimension in order for it to work (@Todo, could be improved)
                 img_data = np.einsum('hwc->chw', img_data)
